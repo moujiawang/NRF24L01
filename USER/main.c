@@ -20,10 +20,9 @@
 
  int main(void)
  {	 
-	u8 key,mode;
 	u8 Result;
 	u16 t=0;			 
-	u8 tmp_buf[33] = {1};		    
+	u8 tmp_buf[33] = {48};		    
 	delay_init();	    		//延时函数初始化	  
 //	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
 	uart_init(115200);	 		//串口初始化为115200
@@ -31,15 +30,11 @@
 //	KEY_Init();					//初始化按键
 //	LCD_Init();			   		//初始化LCD  
  	NRF24L01_Init();    		//初始化NRF24L01 
-// 	POINT_COLOR=RED;			//设置字体为红色 
-//	LCD_ShowString(30,50,200,16,16,"WarShip STM32");	
-//	LCD_ShowString(30,70,200,16,16,"NRF24L01 TEST");	
-//	LCD_ShowString(30,90,200,16,16,"ATOM@ALIENTEK");
-//	LCD_ShowString(30,110,200,16,16,"2015/1/17"); 
+
 	while( NRF24L01_Check() );
 	NRF24L01_TX_Mode();
 	Result = NRF24L01_TxPacket(tmp_buf);
-	switch(Result)
+/*	switch(Result)
 	{
 		case MAX_TX: GPIO_ResetBits(GPIOE,GPIO_Pin_5);break; 					 //PE.5 输出低 
 		case TX_OK:  GPIO_ResetBits(GPIOB,GPIO_Pin_5);break;					 //PB.5 输出低 
@@ -48,7 +43,7 @@
 			GPIO_SetBits(GPIOE,GPIO_Pin_5);
 			GPIO_SetBits(GPIOB,GPIO_Pin_5);
 		}
-	}
+	}*/
 	while(1)
 	{
 

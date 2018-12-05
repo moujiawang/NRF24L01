@@ -58,9 +58,9 @@
                               //bit4,TX FIFO空标志;bit5,TX FIFO满标志;bit6,1,循环发送上一数据包.0,不循环;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //24L01操作线
-#define NRF24L01_CE   PGout(8) //24L01片选信号
-#define NRF24L01_CSN  PGout(7) //SPI片选信号	   
-#define NRF24L01_IRQ  PGin(6)  //IRQ主机数据输入
+//#define NRF24L01_CE   PAout(8) //24L01片选信号
+#define NRF24L01_CSN  PAout(4) //SPI片选信号	   
+#define NRF24L01_IRQ  PAin(8)  //IRQ主机数据输入
 //24L01发送接收数据宽度定义
 #define TX_ADR_WIDTH    5   	//5字节的地址宽度
 #define RX_ADR_WIDTH    5   	//5字节的地址宽度
