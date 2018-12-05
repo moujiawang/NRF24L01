@@ -31,29 +31,29 @@ void NRF24L01_Init(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;				 //PB12上拉 防止W25X的干扰
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
- 	GPIO_Init(GPIOB, &GPIO_InitStructure);	//初始化指定IO
- 	GPIO_SetBits(GPIOB,GPIO_Pin_12);//上拉				
+ 	GPIO_Init(GPIOB, &GPIO_InitStructure);                   //初始化指定IO
+ 	GPIO_SetBits(GPIOB,GPIO_Pin_12);                         //上拉				
  	
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7|GPIO_Pin_8;	//PG8 7 推挽 	  
- 	GPIO_Init(GPIOG, &GPIO_InitStructure);//初始化指定IO
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7|GPIO_Pin_8;	 //PG8 7 推挽 	  
+ 	GPIO_Init(GPIOG, &GPIO_InitStructure);                   //初始化指定IO
   
 	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_6;   
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; //PG6 输入  
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;            //PG6 输入  
 	GPIO_Init(GPIOG, &GPIO_InitStructure);
 
-	GPIO_ResetBits(GPIOG,GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8);//PG6,7,8上拉					 
+	GPIO_ResetBits(GPIOG,GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8);  //PG6,7,8上拉					 
 		 
-	SPI2_Init();    		//初始化SPI	 
+	SPI2_Init();    										 //初始化SPI	 
  
-	SPI_Cmd(SPI2, DISABLE); // SPI外设不使能
+	SPI_Cmd(SPI2, DISABLE); 								 // SPI外设不使能
 
 	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;  //SPI设置为双线双向全双工
 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		//SPI主机
-  SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;		//发送接收8位帧结构
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;		//时钟悬空低
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;	//数据捕获于第1个时钟沿
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSS信号由软件控制
+    SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;	//发送接收8位帧结构
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;			//时钟悬空低
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;		//数据捕获于第1个时钟沿
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;			//NSS信号由软件控制
 	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;		//定义波特率预分频的值:波特率预分频值为16
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//数据传输从MSB位开始
 	SPI_InitStructure.SPI_CRCPolynomial = 7;	//CRC值计算的多项式
@@ -71,7 +71,7 @@ u8 NRF24L01_Check(void)
 {
 	u8 buf[5]={0XA5,0XA5,0XA5,0XA5,0XA5};
 	u8 i;
-	SPI2_SetSpeed(SPI_BaudRatePrescaler_4); //spi速度为9Mhz（24L01的最大SPI时钟为10Mhz）   	 
+	SPI2_SetSpeed(SPI_BaudRatePrescaler_8); //spi速度为9Mhz（24L01的最大SPI时钟为10Mhz）   	 
 	NRF24L01_Write_Buf(NRF_WRITE_REG+TX_ADDR,buf,5);//写入5个字节的地址.	
 	NRF24L01_Read_Buf(TX_ADDR,buf,5); //读出写入的地址  
 	for(i=0;i<5;i++)if(buf[i]!=0XA5)break;	 							   

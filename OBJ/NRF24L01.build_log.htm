@@ -17,7 +17,7 @@ Library Manager: ArmAr.exe V5.05 update 1 (build 106)
 Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
 CPU DLL:         SARMCM3.DLL V5.14.0.0
 Dialog DLL:      DARMSTM.DLL V1.65.0.0
-Target DLL:      Segger\JL2CM3.dll V2.99.13.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.14.0_KEIL
 Dialog DLL:      TARMSTM.DLL V1.64.0.0
  
 <h2>Project:</h2>
@@ -31,7 +31,9 @@ main.c(23): warning:  #177-D: variable "key" was declared but never referenced
         u8 key,mode;
 main.c(23): warning:  #177-D: variable "mode" was declared but never referenced
         u8 key,mode;
-main.c: 2 warnings, 0 errors
+main.c(25): warning:  #177-D: variable "t" was declared but never referenced
+        u16 t=0;                         
+main.c: 3 warnings, 0 errors
 compiling stm32f10x_it.c...
 compiling system_stm32f10x.c...
 compiling led.c...
@@ -51,9 +53,9 @@ compiling stm32f10x_rcc.c...
 compiling stm32f10x_spi.c...
 compiling stm32f10x_usart.c...
 linking...
-Program Size: Code=28124 RO-data=6468 RW-data=56 ZI-data=1848  
+Program Size: Code=6556 RO-data=352 RW-data=52 ZI-data=1836  
 FromELF: creating hex file...
-"..\OBJ\NRF24L01.axf" - 0 Error(s), 2 Warning(s).
+"..\OBJ\NRF24L01.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   E:\Nuts Cloud\program\NRF24L01\USER\RTE
