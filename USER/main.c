@@ -6,7 +6,10 @@
 #include "usart.h"	 
 #include "24l01.h" 	 
  
- 
+
+#define TIM4_PERIOD 8000
+#define Tx_mode_Flag 0
+#define Rx_mode_Flag 0xff
 /************************************************
  ALIENTEK战舰STM32开发板实验33
  无线通信 实验
@@ -17,23 +20,45 @@
  作者：正点原子 @ALIENTEK
 ************************************************/
 
+u8 tmp_buf[33] = {48,49,50,51,52,53,54,55,56,57};	
+u8 Result;
+u8 Mode;
 
  int main(void)
  {	 
-	u8 Result;
+	
 	u16 t=0;			 
-	u8 tmp_buf[33] = {48};		    
-	delay_init();	    		//延时函数初始化	  
-//	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
-	uart_init(115200);	 		//串口初始化为115200
- 	LED_Init();		  			//初始化与LED连接的硬件接口
-//	KEY_Init();					//初始化按键
-//	LCD_Init();			   		//初始化LCD  
- 	NRF24L01_Init();    		//初始化NRF24L01 
+
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
+	NVIC_InitTypeDef NVIC_InitStruct;
+	
+	TIM_TimeBaseInitStruct.TIM_Prescaler = (9-1);				//72MHZ/9等于定时器计数器1秒钟计数的次数，也就是8MHZ，那每计数一次时间为0.000125ms
+	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStruct.TIM_Period = TIM4_PERIOD;			//计数10000次,对应时间是1ms
+	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1; 	///设置时钟分割:TDTS = Tck_tim
+
+	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStruct);
+	
+	delay_init();	    										//延时函数初始化	  
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);				//设置中断优先级分组为组2：2位抢占优先级，2位响应优先级
+	NVIC_InitStruct.NVIC_IRQChannel = TIM4_IRQn;				//设置初始化的是TIM4的中断	
+	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 2;		//设置抢占优先级为2
+	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;				//设置响应优先级（子优先级）为0
+	NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;				//使能定时器4这个中断
+	NVIC_Init(&NVIC_InitStruct);
+	
+	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);					//使能TIM4的TIM_IT_Update中断
+	TIM_Cmd(TIM4, ENABLE);										//使能定时器，开始计数
+	
+	uart_init(115200);	 										//串口初始化为115200
+ 	LED_Init();		  											//初始化与LED连接的硬件接口
+//	KEY_Init();													//初始化按键
+//	LCD_Init();			   										//初始化LCD  
+ 	NRF24L01_Init();    										//初始化NRF24L01 
 
 	while( NRF24L01_Check() );
-	NRF24L01_TX_Mode();
-	Result = NRF24L01_TxPacket(tmp_buf);
+	NRF24L01_RX_Mode();
+	
 /*	switch(Result)
 	{
 		case MAX_TX: GPIO_ResetBits(GPIOE,GPIO_Pin_5);break; 					 //PE.5 输出低 
@@ -46,87 +71,26 @@
 	}*/
 	while(1)
 	{
-
-
+		if(Mode == Tx_mode_Flag)
+		{
+			NRF24L01_TX_Mode();
+			Result = NRF24L01_TxPacket(tmp_buf);
+			NRF24L01_RX_Mode();
+			Mode=Rx_mode_Flag;
+		}
 		
+		NRF24L01_RxPacket(tmp_buf);
 	}
-	
-//	LCD_ShowString(30,130,200,16,16,"NRF24L01 OK"); 	 
-/* 	while(1)
-	{	
-		key=KEY_Scan(0);
-		if(key==KEY0_PRES)
-		{
-			mode=0;   
-			break;
-		}else if(key==KEY1_PRES)
-		{
-			mode=1;
-			break;
-		}
-		t++;
-		if(t==100)LCD_ShowString(10,150,230,16,16,"KEY0:RX_Mode  KEY1:TX_Mode"); //闪烁显示提示信息
- 		if(t==200)
-		{	
-			LCD_Fill(10,150,230,150+16,WHITE);
-			t=0; 
-		}
-		delay_ms(5);	  
-	}   
-// 	LCD_Fill(10,150,240,166,WHITE);//清空上面的显示		  
-// 	POINT_COLOR=BLUE;//设置字体为蓝色	   
-//	if(mode==0)//RX模式
-//	{
-//		LCD_ShowString(30,150,200,16,16,"NRF24L01 RX_Mode");	
-//		LCD_ShowString(30,170,200,16,16,"Received DATA:");	
-		NRF24L01_RX_Mode();		  
-		while(1)
-		{	  		    		    				 
-			if(NRF24L01_RxPacket(tmp_buf)==0)//一旦接收到信息,则显示出来.
-			{
-				tmp_buf[32]=0;//加入字符串结束符
-				LCD_ShowString(0,190,lcddev.width-1,32,16,tmp_buf);    
-			}
-			else delay_us(100);	   
-			t++;
-			if(t==10000)//大约1s钟改变一次状态
-			{
-				t=0;
-				LED0=!LED0;
-			} 				    
-		};
-*/		
-/*	}else//TX模式
-	{	
-		
-//		LCD_ShowString(30,150,200,16,16,"NRF24L01 TX_Mode");	
-		NRF24L01_TX_Mode();
-		mode=' ';//从空格键开始  
-		while(1)
-		{	  		   				 
-			if(NRF24L01_TxPacket(tmp_buf)==TX_OK)
-			{
-				LCD_ShowString(30,170,239,32,16,"Sended DATA:");	
-				LCD_ShowString(0,190,lcddev.width-1,32,16,tmp_buf); 
-				key=mode;
-				for(t=0;t<32;t++)
-				{
-					key++;
-					if(key>('~'))key=' ';
-					tmp_buf[t]=key;	
-				}
-				mode++; 
-				if(mode>'~')mode=' ';  	  
-				tmp_buf[32]=0;//加入结束符		   
-			}else
-			{										   	
- 				LCD_Fill(0,170,lcddev.width,170+16*3,WHITE);//清空显示			   
-				LCD_ShowString(30,170,lcddev.width-1,32,16,"Send Failed "); 
-			};
-			LED0=!LED0;
-			delay_ms(1500);				    
-		};
-	} */
+}	
+
+void TIM4_IRQHandler()
+{
+	if(TIM_GetITStatus(TIM4,TIM_IT_Update) == 1)
+	{
+		NRF24L01_PowerDown_Mode();
+		Mode = Tx_mode_Flag;
+		TIM_ClearFlag(TIM4,TIM_IT_Update);
+	}
 }
 
 

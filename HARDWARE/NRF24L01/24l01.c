@@ -153,7 +153,7 @@ u8 NRF24L01_TxPacket(u8 *txbuf)
 	}
 	return 0xff;//其他原因发送失败
 }
-//启动NRF24L01发送一次数据
+//启动NRF24L01接收一次数据
 //txbuf:待发送数据首地址
 //返回值:0，接收完成；其他，错误代码
 u8 NRF24L01_RxPacket(u8 *rxbuf)
@@ -204,6 +204,14 @@ void NRF24L01_TX_Mode(void)
   	NRF24L01_Write_Reg(NRF_WRITE_REG+RF_SETUP,0x0f);  //设置TX发射参数,0db增益,2Mbps,低噪声增益开启   
   	NRF24L01_Write_Reg(NRF_WRITE_REG+CONFIG,0x0e);    //配置基本工作模式的参数;PWR_UP,EN_CRC,16BIT_CRC,发送模式,开启所有中断
 	delay_us(10);
+//	NRF24L01_CE=1;//CE为高,10us后启动发送
+}
+
+void NRF24L01_PowerDown_Mode(void)
+{
+//	NRF24L01_CE=0;	    
+   
+  	NRF24L01_Write_Reg(NRF_WRITE_REG+CONFIG,0x00);    //配置基本工作模式的参数;PWR_DOWN
 //	NRF24L01_CE=1;//CE为高,10us后启动发送
 }
 
