@@ -29,7 +29,7 @@ u16 T = 0;
 
  int main(void)
  {	 
-	 u8 t;
+	u8 t;
 
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
 	NVIC_InitTypeDef NVIC_InitStruct;
@@ -40,7 +40,7 @@ u16 T = 0;
 	TIM_TimeBaseInitStruct.TIM_Prescaler = (9-1);				//72MHZ/9等于定时器计数器1秒钟计数的次数，也就是8MHZ，那每计数一次时间为0.000125ms
 	TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInitStruct.TIM_Period = TIM4_PERIOD;			//计数8000次,对应时间是1ms
-	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1; 	///设置时钟分割:TDTS = Tck_tim
+	TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1; 	//设置时钟分割:TDTS = Tck_tim
 
 	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStruct);
 	
